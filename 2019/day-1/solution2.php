@@ -32,8 +32,14 @@ function loadFile( $file_path ) {
  * @param int module mass 
  * @return int fuel need of supplied module
  */ 
-function computeFuelPerModule( $module_mass ) {
-  return (floor( $module_mass / 3 )) - 2;  
+function computeFuelPerModule( $module_mass, $total_fuel = 0 ) {
+  $fuel = (floor( $module_mass / 3 )) - 2;
+  if( $fuel > 0 ) {
+    $total_fuel = $total_fuel + $fuel;  
+    return computeFuelPerModule( $fuel, $total_fuel );  
+  } else {
+    return $total_fuel; 
+  }
 } 
 
 
@@ -44,7 +50,8 @@ function computeFuelPerModule( $module_mass ) {
 function computeTotal() {
   $modules_masses = loadFile( 'input.txt' ); 
   if( is_array($modules_masses) ) {
-    $fuel_needs = array();     
+    $fuel_needs = array();
+    $total_fuel_module = 0;     
     foreach( $modules_masses as $key => $module_mass ) {
       $module_fuel_needs = computeFuelPerModule( $module_mass ); 
       $fuel_needs[] = $module_fuel_needs; 
@@ -64,8 +71,8 @@ function testComputeFuelFunctions() {
   $known_mass_and_fuel = array( 
     12 => 2, 
     14 => 2, 
-    1969 => 654, 
-    100756 => 33583 
+    1969 => 966, 
+    100756 => 50346 
   ); 
 
   $known_total_fuel = array_sum( $known_mass_and_fuel ); 
